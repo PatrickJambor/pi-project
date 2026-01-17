@@ -1,23 +1,7 @@
 #pragma once // to prevent multiple imports
 #include <string>
 
-enum Genre {
-    fantasy,
-    scienceFiction,
-    horror,
-    crime,
-    romance
-};
-
-enum CoverType {
-    hardCover,
-    paperBack
-};
-
-enum Format {
-    PDF,
-    EPUB
-};
+#include "enum.h"
 
 class Product {
 protected:
@@ -29,14 +13,30 @@ protected:
     Genre genre;
 
 public:
-    Product(int id, std::string title, std::string author, Genre genre, float price, int amount);
+    Product(
+        const int& id,
+        const std::string& title,
+        const std::string& author,
+        const Genre& genre,
+        const float& price,
+        const int& amount
+    );
 
     virtual ~Product() {}
 
     virtual void compare(const Product& p) = 0;
 
+    virtual std::string toString() = 0;
+
     void sell();
 
-    void changePrice(float newPrice);
+    void changePrice(const float& newPrice);
+
+    int getId();
+    std::string getTitle();
+    std::string getAuthor();
+    float getPrice();
+    int getAmount();
+    Genre getGenre();
 };
 

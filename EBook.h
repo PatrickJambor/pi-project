@@ -9,19 +9,25 @@ private:
 
 public:
     EBook(
-    int id,
-    std::string title,
-    std::string author,
-    float price,
-    int amount,
-    Genre genre,
-    float fileSizeMB,
-    Format format
+    const int& id,
+    const std::string& title,
+    const std::string& author,
+    const float& price,
+    const int& amount,
+    const Genre& genre,
+    const float& fileSizeMB,
+    const Format& format
     ) : Product(id, title, author, genre, price, amount) {}
 
     ~EBook() {}
 
-    void compare(const Product& p);
+    void compare(const Product& p) override;
+
+    std::string toString() override;
+
+    float getFileSizeMB();
+    Format getFormat();
+
 };
 
 

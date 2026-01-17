@@ -23,7 +23,13 @@ public:
 
     ~PaperBook() {}
 
-    void compare(const Product& p);
+    void compare(const Product& p) override;
+
+    std::string toString() override;
+
+    int getPageCount();
+    CoverType getCoverType();
+    bool getHasIllustrations();
 
 };
 

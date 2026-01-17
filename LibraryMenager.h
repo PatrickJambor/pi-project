@@ -1,6 +1,5 @@
 #include <vector>
 #include <string>
-#include <memory>
 
 #include "Product.h"
 
@@ -9,16 +8,49 @@ private:
     std::vector<Product*> products;
 
 public:
-    std::vector<std::string> splitLine(std::string line, char delimiter);
+    bool hasUnsavedChanges = false;
 
-    LibraryMenager(std::string dbFile);
+    std::vector<std::string> splitLine(const std::string& line, const char& delimiter);
 
-    void createBook(char bookType, std::vector<std::string> bookInfo);
+    LibraryMenager(const std::string& dbFile);
 
-    Genre stringToGenre(std::string strGenre);
-    CoverType stringToCoverType(std::string strCover);
-    Format stringToFormat(std::string strFormat);
+    void loadBookFromDb(const char& bookType, const std::vector<std::string>& bookInfo);
+
+    void addAudioBook(
+        const int& id,
+        const std::string& title,
+        const std::string& author,
+        const float& price,
+        const int& amount,
+        const Genre& genre,
+        const float& lengthHours,
+        const bool& hasMultipleNarrators,
+        const bool& isAiNarrated,
+        const bool& hasSoundEffects
+    );
+
+    void addEBook(
+        const int& id,
+        const std::string& title,
+        const std::string& author,
+        const float& price,
+        const int& amount,
+        const Genre& genre,
+        const float& fileSizeMB,
+        const Format& format
+    );
+
+    void addPaperBook(
+        const int& id,
+        const std::string& title,
+        const std::string& author,
+        const float& price,
+        const int& amount,
+        const Genre& genre,
+        const int& pageCount,
+        const CoverType& coverType,
+        const bool& hasIllustrations
+    );
 
     void saveAll();
-    void readAll();
 };

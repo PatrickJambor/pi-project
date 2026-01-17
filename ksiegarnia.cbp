@@ -32,6 +32,16 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="AudioBook.cpp" />
+		<Unit filename="AudioBook.h" />
+		<Unit filename="EBook.cpp" />
+		<Unit filename="EBook.h" />
+		<Unit filename="LibraryMenager.cpp" />
+		<Unit filename="LibraryMenager.h" />
+		<Unit filename="PaperBook.cpp" />
+		<Unit filename="PaperBook.h" />
+		<Unit filename="Product.cpp" />
+		<Unit filename="Product.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

@@ -9,8 +9,9 @@
 #include "AudioBook.h"
 #include "EBook.h"
 #include "PaperBook.h"
+#include "EnumConvert.h"
 
-std::vector<std::string> LibraryMenager::splitLine(std::string line, char delimiter) {
+std::vector<std::string> LibraryMenager::splitLine(const std::string& line, const char& delimiter) {
     std::vector<std::string> v;
     std::stringstream sstream(line);
     std::string part;
@@ -22,34 +23,67 @@ std::vector<std::string> LibraryMenager::splitLine(std::string line, char delimi
     return v;
 }
 
-Genre LibraryMenager::stringToGenre(std::string strGenre) {
-    if (strGenre == "fantasy") return Genre::fantasy;
-    if (strGenre == "scienceFiction") return Genre::scienceFiction;
-    if (strGenre == "horror") return Genre::horror;
-    if (strGenre == "crime") return Genre::crime;
-    if (strGenre == "romance") return Genre::romance;
-    throw std::runtime_error("ERROR: INCORRECT BOOK GENRE.");
+void LibraryMenager::addAudioBook(
+        const int& id,
+        const std::string& title,
+        const std::string& author,
+        const float& price,
+        const int& amount,
+        const Genre& genre,
+        const float& lengthHours,
+        const bool& hasMultipleNarrators,
+        const bool& isAiNarrated,
+        const bool& hasSoundEffects
+)
+{
+    AudioBook* ab = new AudioBook(id, title, author, price, amount,
+    genre, lengthHours, hasMultipleNarrators, isAiNarrated, hasSoundEffects);
+
+    products.push_back(ab);
 }
 
-CoverType LibraryMenager::stringToCoverType(std::string strCover) {
-    if (strCover == "hardCover") return CoverType::hardCover;
-    if (strCover == "paperBack") return CoverType::paperBack;
-    throw std::runtime_error("ERROR: INCORRECT BOOK COVER TYPE.");
+void LibraryMenager::addEBook(
+        const int& id,
+        const std::string& title,
+        const std::string& author,
+        const float& price,
+        const int& amount,
+        const Genre& genre,
+        const float& fileSizeMB,
+        const Format& format
+)
+{
+    EBook* ebook = new EBook(id, title, author, price, amount,
+    genre, fileSizeMB, format);
+
+    products.push_back(ebook);
 }
 
-Format LibraryMenager::stringToFormat(std::string strFormat) {
-    if (strFormat == "PDF") return Format::PDF;
-    if (strFormat == "EPUB") return Format::EPUB;
-    throw std::runtime_error("ERROR: INCORRECT BOOK FORMAT.");
+void LibraryMenager::addPaperBook(
+        const int& id,
+        const std::string& title,
+        const std::string& author,
+        const float& price,
+        const int& amount,
+        const Genre& genre,
+        const int& pageCount,
+        const CoverType& coverType,
+        const bool& hasIllustrations
+)
+{
+    PaperBook* pb = new PaperBook(id, title, author, price, amount,
+    genre, pageCount, coverType, hasIllustrations);
+
+    products.push_back(pb);
 }
 
-void LibraryMenager::createBook(char bookType, std::vector<std::string> bookInfo) {
+void LibraryMenager::loadBookFromDb(const char& bookType, const std::vector<std::string>& bookInfo) {
     int id = std::stoi(bookInfo.at(1));
     std::string title = bookInfo.at(2);
     std::string author = bookInfo.at(3);
     float price = std::stof(bookInfo.at(4));
     int amount = std::stoi(bookInfo.at(5));
-    Genre genre = stringToGenre(bookInfo.at(6));
+    Genre genre = EnumConvert::stringToGenre(bookInfo.at(6));
 
     switch(bookType) {
         case 'A': {
@@ -58,62 +92,28 @@ void LibraryMenager::createBook(char bookType, std::vector<std::string> bookInfo
             bool isAiNarrated = bookInfo.at(9) == "true";
             bool hasSoundEffects = bookInfo.at(10) == "true";
 
-            AudioBook* ab = new AudioBook(
-                id,
-                title,
-                author,
-                price,
-                amount,
-                genre,
-                lengthHours,
-                hasMultipleNarrators,
-                isAiNarrated,
-                hasSoundEffects
-            );
-            products.push_back(ab);
+            addAudioBook(id,title,author,price,amount,genre,lengthHours,hasMultipleNarrators,isAiNarrated,hasSoundEffects);
             break;
         }
         case 'E': {
             float fileSizeMB = std::stof(bookInfo.at(7));
-            Format format = stringToFormat(bookInfo.at(8));
+            Format format = EnumConvert::stringToFormat(bookInfo.at(8));
 
-            EBook* ebook = new EBook(
-                id,
-                title,
-                author,
-                price,
-                amount,
-                genre,
-                fileSizeMB,
-                format
-            );
-
-            products.push_back(ebook);
+            addEBook(id,title,author,price,amount,genre,fileSizeMB,format);
             break;
         }
         case 'P': {
             int pageCount = std::stoi(bookInfo.at(7));
-            CoverType cover = stringToCoverType(bookInfo.at(8));
+            CoverType cover = EnumConvert::stringToCoverType(bookInfo.at(8));
             bool hasIllustrations = bookInfo.at(9) == "true";
 
-            PaperBook* pb = new PaperBook(
-                id,
-                title,
-                author,
-                price,
-                amount,
-                genre,
-                pageCount,
-                cover,
-                hasIllustrations
-            );
-
-            products.push_back(pb);
+            addPaperBook(id,title,author,price,amount,genre,pageCount,cover,hasIllustrations);
+            break;
         }
     }
 }
 
-LibraryMenager::LibraryMenager(std::string dbFile) {
+LibraryMenager::LibraryMenager(const std::string& dbFile) {
     std::ifstream db(dbFile);
 
     if (!db.is_open()) {
@@ -125,11 +125,8 @@ LibraryMenager::LibraryMenager(std::string dbFile) {
     while (std::getline(db, line)) {
         std::vector<std::string> bookInfo = splitLine(line, ';');
         char bookType = bookInfo.front()[0];
-        createBook(bookType,bookInfo);
+        loadBookFromDb(bookType,bookInfo);
     }
-
-    std::cout << products.size() << std::endl;
-
     db.close();
 }
 

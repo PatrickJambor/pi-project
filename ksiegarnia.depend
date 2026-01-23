@@ -91,3 +91,88 @@
 1768935099 source:c:\users\mateusz\desktop\projects\ksiegarnia\utils.cpp
 	"Utils.h"
 
+1769104274 source:c:\users\mateusz\desktop\pi-project-main\audiobook.cpp
+	"AudioBook.h"
+	"EnumConvert.h"
+	"Utils.h"
+
+1769104274 c:\users\mateusz\desktop\pi-project-main\audiobook.h
+	<string>
+	"product.h"
+
+1769104274 c:\users\mateusz\desktop\pi-project-main\product.h
+	<string>
+	"enum.h"
+
+1769104274 c:\users\mateusz\desktop\pi-project-main\enum.h
+
+1769104274 c:\users\mateusz\desktop\pi-project-main\enumconvert.h
+	<string>
+	"enum.h"
+
+1769185703 c:\users\mateusz\desktop\pi-project-main\utils.h
+	<iostream>
+	<sstream>
+	<iomanip>
+
+1769104274 source:c:\users\mateusz\desktop\pi-project-main\ebook.cpp
+	"EBook.h"
+	"EnumConvert.h"
+	"Utils.h"
+
+1769104274 c:\users\mateusz\desktop\pi-project-main\ebook.h
+	<string>
+	"product.h"
+
+1769104274 source:c:\users\mateusz\desktop\pi-project-main\enumconvert.cpp
+	<stdexcept>
+	<iostream>
+	"EnumConvert.h"
+
+1769191048 source:c:\users\mateusz\desktop\pi-project-main\librarymenager.cpp
+	<fstream>
+	<iostream>
+	<vector>
+	<stdexcept>
+	<sstream>
+	<string>
+	<algorithm>
+	"LibraryMenager.h"
+	"AudioBook.h"
+	"EBook.h"
+	"PaperBook.h"
+	"EnumConvert.h"
+	"Utils.h"
+
+1769190233 c:\users\mateusz\desktop\pi-project-main\librarymenager.h
+	<vector>
+	<string>
+	"Product.h"
+
+1769104274 c:\users\mateusz\desktop\pi-project-main\paperbook.h
+	<string>
+	"product.h"
+
+1769191355 source:c:\users\mateusz\desktop\pi-project-main\main.cpp
+	<stdexcept>
+	<iostream>
+	<windows.h>
+	"Product.h"
+	"AudioBook.h"
+	"EBook.h"
+	"PaperBook.h"
+	"LibraryMenager.h"
+	"EnumConvert.h"
+	"Utils.h"
+
+1769104274 source:c:\users\mateusz\desktop\pi-project-main\paperbook.cpp
+	"PaperBook.h"
+	"EnumConvert.h"
+	"Utils.h"
+
+1769104274 source:c:\users\mateusz\desktop\pi-project-main\product.cpp
+	"Product.h"
+
+1769186413 source:c:\users\mateusz\desktop\pi-project-main\utils.cpp
+	"Utils.h"
+

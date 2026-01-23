@@ -82,6 +82,14 @@ void LibraryMenager::addPaperBook(
 void LibraryMenager::loadBookFromDb(const char& bookType, const std::vector<std::string>& bookInfo) {
     int id = std::stoi(bookInfo.at(1));
     std::string title = bookInfo.at(2);
+
+    for(Product* p : products) {
+        if(p->getId() == id) {
+            std::cout << "BLAD: Ksiazka o tytule " << title << " ma id ktore zostalo juz zaladowane. Sprawdz baze danych." << std::endl;
+            return;
+        }
+    }
+
     std::string author = bookInfo.at(3);
     float price = std::stof(bookInfo.at(4));
     int amount = std::stoi(bookInfo.at(5));
@@ -187,7 +195,7 @@ void LibraryMenager::sellBookById(const int& id, const int& sellAmount) {
 
     for (Product* p : products) {
         if(p->getId() == id) {
-            if (p->getAmount() > 0) {
+            if (p->getAmount() >= sellAmount) {
                 p->sell(sellAmount);
                 soldSomething = true;
                 if(!hasUnsavedChanges) hasUnsavedChanges = true;
@@ -195,11 +203,11 @@ void LibraryMenager::sellBookById(const int& id, const int& sellAmount) {
         }
     }
     if(insufficientAmount) {
-        std::cout << "BLAD: NIEWYSTARCZAJACA ILOSC KSIAZEK NA STANIE ABY WYKONAC OPERACJE" << std::endl;
+        std::cout << "BLAD: Niewystarczajaca ilosc ksiazek na stanie aby wykonac operacje" << std::endl;
         return;
     }
     if(soldSomething) std::cout << "Operacja wykonana pomyslnie." << std::endl;
-    else std::cout << "Operacja nie powiodla sie. Nie znaleziono ksiazki o podanym id" << std::endl;
+    else std::cout << "Operacja nie powiodla sie. Nie znaleziono ksiazki o podanym id." << std::endl;
 }
 
 void LibraryMenager::restockBookById(const int& id, const int& restockAmount) {
@@ -211,8 +219,8 @@ void LibraryMenager::restockBookById(const int& id, const int& restockAmount) {
             if(!hasUnsavedChanges) hasUnsavedChanges = true;
         }
     }
-    if(restockSuccessful) std::cout << "Operacja wykonana pomyœlnie." << std::endl;
-    else std::cout << "Operacja nie powiodla sie. Nie znaleziono ksiazki o podanym id" << std::endl;
+    if(restockSuccessful) std::cout << "Operacja wykonana pomyslnie." << std::endl;
+    else std::cout << "Operacja nie powiodla sie. Nie znaleziono ksiazki o podanym id." << std::endl;
 }
 
 
@@ -230,7 +238,7 @@ void LibraryMenager::removeBookById(const int& id) {
 
         std::cout << "Operacja wykonana pomyslnie." << std::endl;
     } else {
-        std::cout << "Operacja nie powiodla sie. Nie znaleziono ksiazki o podanym id" << std::endl;
+        std::cout << "Operacja nie powiodla sie. Nie znaleziono ksiazki o podanym id." << std::endl;
     }
 }
 
@@ -246,7 +254,7 @@ void LibraryMenager::changeBookPriceById(const int& id, const float& newPrice) {
         std::cout << "Operacja wykonana pomyslnie" << std::endl;
         if(!hasUnsavedChanges) hasUnsavedChanges = true;
     }
-    else std::cout << "Operacja nie powiodla sie. Nie znaleziono ksiazki o podanym id" << std::endl;
+    else std::cout << "Operacja nie powiodla sie. Nie znaleziono ksiazki o podanym id." << std::endl;
 }
 
 int LibraryMenager::getAllBookCount() {
@@ -293,7 +301,7 @@ void LibraryMenager::saveAll() {
         std::cout << "Dokonano zapisu" << std::endl;
 
     } else {
-        std::cout << "Nie dokonano zmian, ktore mozna zapisac w bazie." << std::endl;
+        std::cout << "Nie dokonano zapisu. Baza danych ma aktualne informacje." << std::endl;
     }
 }
 
@@ -324,5 +332,24 @@ void LibraryMenager::displayAll() {
     std::cout << "Liczba wynikow: " << results << std::endl;
 }
 
+void LibraryMenager::massRestock() {
+    std::ifstream f("massRestock.txt");
+
+    if(!f.is_open()) {
+        std::cout << "Nie znaleziono pliku z dostawa. Zostanie utworzony pusty plik." << std::endl;
+        std::ofstream f("massRestock.txt");
+        return;
+    }
+
+    std::string line;
 
 
+    while(std::getline(f,line)) {
+        std::vector<std::string> restockInfo = splitLine(line,';');
+        int id = std::stoi(restockInfo.front());
+        int restockAmount = std::stoi(restockInfo.back());
+
+        restockBookById(id, restockAmount);
+    }
+
+}

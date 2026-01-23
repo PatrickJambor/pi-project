@@ -79,4 +79,6 @@ public:
 
     bool idAlreadExists(const int& id);
 
+    void massRestock();
+
 };

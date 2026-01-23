@@ -8,13 +8,14 @@
 #include "PaperBook.h"
 #include "LibraryMenager.h"
 #include "EnumConvert.h"
+#include "Utils.h"
 
 const std::string DB_FILE_PATH = "db.txt";
 
 void displayMainMenu() {
     std::cout << std::endl;
     std::cout << "###SYSTEM ZARZADZANIA KSIEGARNIA###" << std::endl;
-    std::cout << std::endl;
+    std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << std::endl;
     std::cout << "***MENU GLOWNE***" << std::endl;
 
     std::cout << "1: Wyszukiwanie" << std::endl;
@@ -43,12 +44,7 @@ void handleSearchMenu(LibraryMenager& menager) {
 
         switch(choice) {
         case '1': {
-            int id;
-            std::cout << "Podaj id" << std::endl;
-            std::cout << ">";
-            std::cin >> id;
-            std::cin.ignore(1000, '\n');
-
+            int id = Utils::enforceValidIntInput("Podaj id");
             menager.searchBooksById(id);
             break;
         }
@@ -71,16 +67,8 @@ void handleSearchMenu(LibraryMenager& menager) {
             break;
         }
         case '4': {
-            int minPrice;
-            int maxPrice;
-            std::cout << "Podaj minimalna cene" << std::endl;
-            std::cout << ">";
-            std::cin >> minPrice;
-
-            std::cout << "Podaj maksymalna cene" << std::endl;
-            std::cout << ">";
-            std::cin >> maxPrice;
-
+            int minPrice = Utils::enforceValidIntInput("Podaj minimalna cene");
+            int maxPrice = Utils::enforceValidIntInput("Podaj maksymalna cene");
             menager.searchByPriceRange(minPrice, maxPrice);
             break;
         }
@@ -90,66 +78,63 @@ void handleSearchMenu(LibraryMenager& menager) {
 }
 
 void handleBookSell(LibraryMenager& menager) {
-    int id;
-    int amountToSell;
-    std::cout << "Podaj id" << std::endl;
-    std::cout << ">";
-    std::cin >> id;
-
-    std::cout << "Ile chcesz sprzedac?" << std::endl;
-    std::cout << ">";
-    std::cin >> amountToSell;
-
-    std::cin.ignore(1000, '\n');
-
+    int id = Utils::enforceValidIntInput("Podaj id");
+    int amountToSell = Utils::enforceValidIntInput("Ile Chcesz sprzedac");
     menager.sellBookById(id, amountToSell);
 }
 
 void handleRestock(LibraryMenager& menager) {
-    int id;
-    int amountToRestock;
-    std::cout << "Podaj id" << std::endl;
-    std::cout << ">";
-    std::cin >> id;
-
-    std::cout << "Ilosc ksiazek w dostawie" << std::endl;
-    std::cout << ">";
-    std::cin >> amountToRestock;
-
-    std::cin.ignore(1000, '\n');
-
+    int id = Utils::enforceValidIntInput("Podaj id");
+    int amountToRestock = Utils::enforceValidIntInput("Ilosc ksiazek w dostawie");
     menager.restockBookById(id, amountToRestock);
+}
+
+void handleMassRestock(LibraryMenager& menager) {
+    menager.massRestock();
 }
 
 void handleBookAddition(LibraryMenager& menager) {
     std::string bookType;
-    std::cout << "Podaj typ ksiazki (\"AudioBook\", \"EBook\", \"Papierowa\")" << std::endl;
-    std::cout << ">";
+    char type;
 
-    std::cin >> bookType;
-    std::cin.ignore(1000, '\n');
+    while (type != '1' && type != '2' && type != '3') {
+        std::cout << "Podaj typ ksiazki" << std::endl;
+        std::cout << "1: AudioBook" << std::endl;
+        std::cout << "2: EBook" << std::endl;
+        std::cout << "3: Papierowa" << std::endl;
 
-    if (bookType != "AudioBook" && bookType != "EBook" && bookType != "Papierowa") {
-        std::cout << "BLAD: Podano nieprawidlowy typ ksiazki." << std::endl;
-        return;
+        std::cout << ">";
+
+        std::cin >> type;
+        std::cin.ignore(1000, '\n');
+
     }
 
-    int id;
-    std::string title;
-    std::string author;
-    float price;
-    int amount;
-    Genre genre;
+    switch(type) {
+        case '1': {
+            bookType = "AudioBook";
+            break;
+        case '2':
+            bookType = "EBook";
+            break;
+        case '3':
+            bookType = "PaperBook";
+            break;
+        }
+    }
 
-    std::cout << "Podaj id" << std::endl;
-    std::cout << ">";
-    std::cin >> id;
-    std::cin.ignore(1000, '\n');
+    int id = Utils::enforceValidIntInput("Podaj id");
 
     if (menager.idAlreadExists(id)) {
         std::cout << "BLAD: Ksiazka o podanym id juz istnieje w bazie." << std::endl;
         return;
     }
+
+    std::string title;
+    std::string author;
+    float price = Utils::enforceValidFloatInput("Podaj cene");
+    int amount = Utils::enforceValidIntInput("Podaj ilosc");
+    Genre genre;
 
     std::cout << "Podaj tytul" << std::endl;
     std::cout << ">";
@@ -161,34 +146,50 @@ void handleBookAddition(LibraryMenager& menager) {
     std::cin >> author;
     std::cin.ignore(1000, '\n');
 
-    std::cout << "Podaj cene" << std::endl;
-    std::cout << ">";
-    std::cin >> price;
-    std::cin.ignore(1000, '\n');
-
-    std::cout << "Podaj ilosc" << std::endl;
-    std::cout << ">";
-    std::cin >> amount;
-    std::cin.ignore(1000, '\n');
-
     std::string strGenre;
-    std::cout << "Podaj gatunek (\"fantasy\", \"scienceFiction\", \"horror\", \"crime\", \"romance\")" << std::endl;
-    std::cout << ">";
-    std::cin >> strGenre;
-    std::cin.ignore(1000, '\n');
+
+    char cGenre;
+
+    while (cGenre != '1' && cGenre != '2' && cGenre != '3' && cGenre != '4' && cGenre != '5') {
+        std::cout << "Podaj gatunek" << std::endl;
+        std::cout << "1: fantasy" << std::endl;
+        std::cout << "2: scienceFiction" << std::endl;
+        std::cout << "3: horror" << std::endl;
+        std::cout << "4: crime" << std::endl;
+        std::cout << "5: romance" << std::endl;
+        std::cout << ">";
+
+        std::cin >> cGenre;
+        std::cin.ignore(1000, '\n');
+
+    }
+
+    switch(cGenre) {
+        case '1': {
+            strGenre = "fantasy";
+            break;
+        case '2':
+            strGenre = "scienceFiction";
+            break;
+        case '3':
+            strGenre = "horror";
+            break;
+        case '4':
+            strGenre = "crime";
+            break;
+        case '5':
+            strGenre = "romance";
+            break;
+        }
+    }
 
     genre = EnumConvert::stringToGenre(strGenre);
 
     if (bookType == "AudioBook") {
-        float lengthHours;
+        float lengthHours = Utils::enforceValidFloatInput("Podaj dlugosc w godzinach");
         bool hasMultipleNarrators;
         bool isAiNarrated;
         bool hasSoundEffects;
-
-        std::cout << "Podaj dlugosc w godzinach" << std::endl;
-        std::cout << ">";
-        std::cin >> lengthHours;
-        std::cin.ignore(1000, '\n');
 
         std::string narrators;
         std::cout << "Ma wielu narratorow? (T/N)" << std::endl;
@@ -219,20 +220,33 @@ void handleBookAddition(LibraryMenager& menager) {
         return;
 
     } else if (bookType == "EBook") {
-        float fileSizeMB;
+        float fileSizeMB = Utils::enforceValidFloatInput("Podaj rozmiar pliku w MB");
         Format format;
 
         std::string strFormat;
 
-        std::cout << "Podaj rozmiar pliku w MB" << std::endl;
-        std::cout << ">";
-        std::cin >> fileSizeMB;
-        std::cin.ignore(1000, '\n');
+        char cFormat;
 
-        std::cout << "Podaj format (\"PDF\", \"EPUB\")" << std::endl;
-        std::cout << ">";
-        std::cin >> strFormat;
-        std::cin.ignore(1000, '\n');
+        while (cFormat != '1' && cFormat != '2' && cFormat != '3') {
+            std::cout << "Podaj format" << std::endl;
+            std::cout << "1: PDF" << std::endl;
+            std::cout << "2: EPUB" << std::endl;
+            std::cout << ">";
+
+            std::cin >> cFormat;
+            std::cin.ignore(1000, '\n');
+
+        }
+
+        switch(cFormat) {
+            case '1': {
+                strFormat = "PDF";
+                break;
+            case '2':
+                strFormat = "EPUB";
+                break;
+            }
+        }
 
         format = EnumConvert::stringToFormat(strFormat);
 
@@ -240,23 +254,33 @@ void handleBookAddition(LibraryMenager& menager) {
         if(!menager.getHasUnsavedChanges()) menager.setHasUnsavedChanges(true);
 
         return;
-    } else if (bookType == "Papierowa") {
-        int pageCount;
+    } else if (bookType == "PaperBook") {
+        int pageCount = Utils::enforceValidIntInput("Podaj ilosc stron");
         CoverType coverType;
         bool hasIllustrations;
 
-        std::cout << "Podaj ilosc stron" << std::endl;
-        std::cout << ">";
-        std::cin >> pageCount;
-        std::cin.ignore(1000, '\n');
-
+        char cCover;
         std::string strCover;
-        std::cout << "Podaj typ okladki (Twarda/Miekka)" << std::endl;
-        std::cout << ">";
-        std::cin >> strCover;
-        std::cin.ignore(1000, '\n');
 
-        strCover = strCover == "Twarda" ? "hardCover" : "paperBack";
+        while (cCover != '1' && cCover != '2' && cCover != '3') {
+            std::cout << "Podaj typ okladki" << std::endl;
+            std::cout << "1: Twarda" << std::endl;
+            std::cout << "2: Miekka" << std::endl;
+            std::cout << ">";
+
+            std::cin >> cCover;
+            std::cin.ignore(1000, '\n');
+
+        }
+        switch(cCover) {
+            case '1': {
+                strCover = "hardCover";
+                break;
+            case '2':
+                strCover = "paperBack";
+                break;
+            }
+        }
 
         coverType = EnumConvert::stringToCoverType(strCover);
 
@@ -273,25 +297,13 @@ void handleBookAddition(LibraryMenager& menager) {
 }
 
 void handleBookRemoval(LibraryMenager& menager) {
-    int id;
-    std::cout << "Podaj id" << std::endl;
-    std::cin >> id;
-    std::cin.ignore(1000, '\n');
-
+    int id = Utils::enforceValidIntInput("Podaj id");
     menager.removeBookById(id);
 }
 
 void handlePriceChange(LibraryMenager& menager) {
-    int id;
-    std::cout << "Podaj id" << std::endl;
-    std::cin >> id;
-    std::cin.ignore(1000, '\n');
-
-    float newPrice;
-    std::cout << "Podaj nowa cene" << std::endl;
-    std::cin >> newPrice;
-    std::cin.ignore(1000, '\n');
-
+    int id = Utils::enforceValidIntInput("Podaj id");
+    float newPrice = Utils::enforceValidFloatInput("Podaj nowa cene");
     menager.changeBookPriceById(id, newPrice);
 }
 
@@ -302,10 +314,11 @@ void handleManagementMenu(LibraryMenager& menager) {
         std::cout << "***ZARZADZANIE STANEM***" << std::endl;
         std::cout << "1: Sprzedaz po id" << std::endl;
         std::cout << "2: Dostawa ksiazki" << std::endl;
-        std::cout << "3: Dodaj ksiazke" << std::endl;
-        std::cout << "4: Usun ksiazke" << std::endl;
-        std::cout << "5: Zmien cene ksiazki po id" << std::endl;
-        std::cout << "6: Menu glowne" << std::endl;
+        std::cout << "3: Masowa dostawa ksiazek z pliku" << std::endl;
+        std::cout << "4: Dodaj ksiazke" << std::endl;
+        std::cout << "5: Usun ksiazke" << std::endl;
+        std::cout << "6: Zmien cene ksiazki po id" << std::endl;
+        std::cout << "7: Menu glowne" << std::endl;
 
         std::cout << ">";
 
@@ -322,25 +335,29 @@ void handleManagementMenu(LibraryMenager& menager) {
                 break;
             }
             case '3': {
-                handleBookAddition(menager);
+                handleMassRestock(menager);
                 break;
             }
             case '4': {
-                handleBookRemoval(menager);
+                handleBookAddition(menager);
                 break;
             }
             case '5': {
+                handleBookRemoval(menager);
+                break;
+            }
+            case '6': {
                 handlePriceChange(menager);
                 break;
             }
         }
-        if(choice == '6') break;
+        if(choice == '7') break;
     }
 }
 
 void handleBookCount(LibraryMenager& menager) {
     int bookCount = menager.getAllBookCount();
-    std::cout << "Ilosc wszystkich ksiazek: " << bookCount << std::endl;
+    std::cout << "Ilosc wszystkich ksiazek (szt): " << bookCount << std::endl;
 }
 
 void handleBookValue(LibraryMenager& menager) {
@@ -428,7 +445,6 @@ int main()
                 }
                 break;
             case '4':
-
                 try {
                     handleBookDisplay(menager);
                 } catch(std::runtime_error& e) {
